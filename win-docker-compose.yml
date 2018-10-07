@@ -1,0 +1,44 @@
+# NOTE: data volumes
+
+# exred_postgres_data
+# ===================
+# create the volume for the db container (postgresql) like this:
+# docker volume create exred_postgres_data -d local
+#
+# exred_data
+# ==========
+# The exred_data volume is mounted from the windows file system.
+# This volume should contain arbitrary data (eg. SSL certs) cthat will be made available to exred inside the container
+# (make sure to share the appropriate drive and/or folder with the docker daemon in docker settings)
+
+
+version: "3"
+services:
+    exred_db:
+        image: zsolt001/exred_db:latest
+        volumes:
+            - exred_postgres_data:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+        networks:
+            - exrednet
+        env_file: env_file
+    exred:
+        image: zsolt001/exred:latest
+        depends_on:
+          - "exred_db"
+        volumes:
+          - d:/data/exred_data:/var/exred_data
+        ports:
+            - "4000:4000"
+        networks:
+            - exrednet
+        env_file: ./env_file
+        command: ["/usr/local/bin/wait-for-postgres.sh", "-r", "30", "--", "/app/bin/exred", "foreground"]
+        #command: ["tail", "-f", "/dev/null"]
+        #command: ["/usr/local/bin/wait-for-it.sh", "exred_db:5432", "-t", "30", "-s", "--", "/app/bin/exred", "foreground"]
+networks:
+    exrednet:
+volumes:
+    exred_postgres_data:
+        external: true
