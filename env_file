@@ -8,7 +8,7 @@ EXRED_AWSIOT_PRIVATE_KEY=/var/exred_data/c592a5868f-private.pem.key
 EXRED_AWSIOT_CERTIFICATE=/var/exred_data/c592a5868f-certificate.pem.crt
 EXRED_AWSIOT_CACERTIFICATE=/var/exred_data/symantec_ca_root.pem
 
-EXRED_UI_HOSTNAME=localhost
+EXRED_UI_HOSTNAME=exred_ui
 EXRED_UI_PORT=4000
 
 POSTGRES_USER=exred_user

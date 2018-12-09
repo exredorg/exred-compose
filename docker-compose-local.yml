@@ -1,7 +1,7 @@
-version: "2"
+version: "3"
 services:
     exred_db:
-        image: zsolt001/exred_db_rpi:latest
+        image: zsolt001/exred_db:latest
         volumes:
             - ~/exred_postgres_data:/var/lib/postgresql/data
         ports:
@@ -9,8 +9,19 @@ services:
         networks:
             - exrednet
         env_file: env_file
+    exred_scheduler:
+        image: exred_scheduler:latest
+        depends_on:
+          - "exred_db"
+        volumes:
+          - ~/exred_data:/var/exred_data
+        networks:
+            - exrednet
+        env_file: ./env_file
+        command: ["/usr/local/bin/wait-for-postgres.sh", "-r", "30", "--", "/app/bin/exred_scheduler", "foreground"]
+        #command: ["tail", "-f", "/dev/null"]
     exred_ui:
-        image: zsolt001/exred_ui_rpi:latest
+        image: exred_ui:latest
         depends_on:
           - "exred_db"
         volumes:
@@ -21,15 +32,6 @@ services:
             - exrednet
         env_file: ./env_file
         command: ["/usr/local/bin/wait-for-postgres.sh", "-r", "30", "--", "/app/bin/exred_ui", "foreground"]
-    exred_scheduler:
-        image: zsolt001/exred_scheduler_rpi:latest
-        depends_on:
-          - "exred_db"
-        volumes:
-          - ~/exred_data:/var/exred_data
-        networks:
-            - exrednet
-        env_file: ./env_file
-        command: ["/usr/local/bin/wait-for-postgres.sh", "-r", "30", "--", "/app/bin/exred_scheduler", "foreground"]
+        #command: ["tail", "-f", "/dev/null"]
 networks:
     exrednet:
