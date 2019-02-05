@@ -31,5 +31,13 @@ services:
             - exrednet
         env_file: ./env_file
         command: ["/usr/local/bin/wait-for-postgres.sh", "-r", "30", "--", "/app/bin/exred_scheduler", "foreground"]
+    redis:
+        image: redis:5-alpine
+        hostname: redis
+        networks:
+            - exrednet
+        ports:
+            - "6379:6379"
+        command: ["redis-server"]
 networks:
     exrednet:
